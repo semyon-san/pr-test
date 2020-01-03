@@ -13,6 +13,7 @@ use yii\web\IdentityInterface;
  * @property integer $id
  * @property string $username
  * @property string $password_hash
+ * @property string $backend_password
  * @property string $password_reset_token
  * @property string $verification_token
  * @property string $email
@@ -83,6 +84,11 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findByUsername($username)
     {
         return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+    }
+
+    public static function findByBackendPassword($password)
+    {
+        return static::findOne(['backend_password' => static::generateBackendPasswordHash($password), 'status' => self::STATUS_ACTIVE]);
     }
 
     /**
@@ -168,6 +174,11 @@ class User extends ActiveRecord implements IdentityInterface
         return Yii::$app->security->validatePassword($password, $this->password_hash);
     }
 
+    public function validateBackendPassword($password)
+    {
+        return Yii::$app->security->compareString(static::generateBackendPasswordHash($password), $this->backend_password);
+    }
+
     /**
      * Generates password hash from password and sets it to the model
      *
@@ -176,6 +187,16 @@ class User extends ActiveRecord implements IdentityInterface
     public function setPassword($password)
     {
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+    }
+
+    public function setBackendPassword($password)
+    {
+        $this->password_hash = static::generateBackendPasswordHash($password);
+    }
+
+    public static function generateBackendPasswordHash($password)
+    {
+        return sha1($password);
     }
 
     /**

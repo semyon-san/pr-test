@@ -17,6 +17,7 @@ class m130524_201442_init extends Migration
             'username' => $this->string()->notNull()->unique(),
             'auth_key' => $this->string(32)->notNull(),
             'password_hash' => $this->string()->notNull(),
+            'backend_password' => $this->string()->notNull(),
             'password_reset_token' => $this->string()->unique(),
             'email' => $this->string()->notNull()->unique(),
 
@@ -30,6 +31,7 @@ class m130524_201442_init extends Migration
         $this->insert('user', [
             'username' => 'semyon',
             'password_hash' => \Yii::$app->security->generatePasswordHash($password),
+            'backend_password' => \common\models\User::generateBackendPasswordHash($password),
             'auth_key' => Yii::$app->security->generateRandomString(),
             'email' => 'semyon.h@prhol.ru',
             'status' => \common\models\User::STATUS_ACTIVE,
