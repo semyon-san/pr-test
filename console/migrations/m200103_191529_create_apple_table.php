@@ -18,8 +18,8 @@ class m200103_191529_create_apple_table extends Migration
             'color' => $this->string()->notNull(),
             'date_born' => $this->integer()->notNull(),
             'date_fall' => $this->integer(),
-            'status' => "ENUM('". implode("','", AppleStatus::listData())
-                ."') NOT NULL DEFAULT '" . AppleStatus::getLabel(AppleStatus::ON_TREE) . "'",
+            'status' => "ENUM('". implode("','", AppleStatus::getConstantsByName())
+                ."') NOT NULL DEFAULT '" . AppleStatus::ON_TREE . "'",
             'eaten' => $this->integer()->defaultValue(0)->notNull(),
 
             'date_created' => $this->datetime()->notNull()->defaultValue(new \yii\db\Expression('NOW()')),
