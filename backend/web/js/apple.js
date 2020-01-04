@@ -42,10 +42,8 @@ jQuery(function() {
             $('#apple-'+appleId + ' .apple-status').text(resp);
         })
         .fail(function(resp) {
-            krajeeDialogError.alert(resp.responseText);
-        })
-        .always(function() {
             btnElement.removeClass('disabled');
+            krajeeDialogError.alert(resp.responseText);
         });
 
         return false;

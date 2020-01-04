@@ -24,7 +24,7 @@ use common\models\enums\AppleStatus;
         </div>
     </div>
     <p>
-        <a class="apple-drop-btn btn btn-success" href="#" data-id="<?= $apple->id ?>">Упасть</a>
+        <a class="apple-drop-btn btn btn-success <?= !$apple->isOnTree() ? 'disabled' : '' ?>" href="#" data-id="<?= $apple->id ?>">Упасть</a>
         <a class="apple-eat-btn btn btn-warning" href="#" data-id="<?= $apple->id ?>">Съесть</a>
         <a class="apple-delete-btn btn btn-danger" href="#" data-id="<?= $apple->id ?>">Удалить</a>
     </p>
