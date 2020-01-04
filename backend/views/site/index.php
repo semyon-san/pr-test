@@ -5,10 +5,27 @@
 
 namespace backend\views;
 
-use backend\models\Apple;
+use kartik\dialog\Dialog;
 
 $this->title = 'Яблоки';
 ?>
+
+<?= Dialog::widget([
+    'libName' => 'krajeeDialogEat',
+    'options' => [
+        'title' => 'Съесть',
+        'type' => Dialog::TYPE_WARNING,
+    ],
+]) ?>
+
+<?= Dialog::widget([
+    'libName' => 'krajeeDialogError',
+    'options' => [
+        'title' => 'Ошибка',
+        'type' => Dialog::TYPE_DANGER,
+    ],
+]) ?>
+
 <div class="site-index">
 
     <div class="jumbotron">

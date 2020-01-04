@@ -33,6 +33,10 @@ class Apple extends \common\models\Apple
             return 1;
         }
 
+        if ($percentage === 0) {
+            return 0;
+        }
+
         return round($percentage/100, 2);
     }
 

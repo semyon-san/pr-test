@@ -11,7 +11,7 @@ use common\models\enums\AppleStatus;
 
 class AppleController extends Controller
 {
-    const NUM_APPLES = 6;
+    const MAX_NUM_APPLES = 7;
 
     public function behaviors()
     {
@@ -42,7 +42,9 @@ class AppleController extends Controller
     {
         $apples = [];
 
-        for ($i = 0; $i < self::NUM_APPLES; $i++) {
+        $numApples = rand(1, self::MAX_NUM_APPLES);
+
+        for ($i = 0; $i < $numApples; $i++) {
             $apple = new Apple($this->generateRandomColor());
             $apple->date_born = time() - rand(0, Apple::EXPIRE_HOURS)*3600;
             if (!$apple->save()) {
@@ -102,11 +104,17 @@ class AppleController extends Controller
             throw new \yii\web\BadRequestHttpException($e->getMessage());
         }
 
+        if ($apple->size === 0) {
+            $apple->delete();
+
+            return 0;
+        }
+
        if (!$apple->save()) {
             throw new \yii\db\Exception(Html::errorSummary($apple, ['encode' => false]));
        }
 
-       return $apple->size;
+       return $apple->size * 100;
     }
 
     /**
