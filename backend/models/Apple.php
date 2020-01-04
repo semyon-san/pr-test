@@ -54,6 +54,10 @@ class Apple extends \common\models\Apple
         return false;
     }
 
+    /**
+     * @param $percentage
+     * @throws InvalidArgumentException
+     */
     public function eat($percentage)
     {
         if ($this->isOnTree()) {

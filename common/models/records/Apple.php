@@ -98,6 +98,8 @@ class Apple extends \yii\db\ActiveRecord
 
     public function fallToGround()
     {
-        $this->status = AppleStatus::FALLEN;
+        if ($this->isOnTree()) {
+            $this->status = AppleStatus::FALLEN;
+        }
     }
 }

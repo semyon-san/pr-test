@@ -3,8 +3,11 @@
 namespace backend\controllers;
 
 use backend\models\Apple;
+use yii\base\InvalidArgumentException;
 use yii\rest\Controller;
 use Yii;
+use yii\helpers\Html;
+use common\models\enums\AppleStatus;
 
 class AppleController extends Controller
 {
@@ -17,6 +20,8 @@ class AppleController extends Controller
                 'class' => \yii\filters\VerbFilter::class,
                 'actions' => [
                     'generate-random' => ['GET'],
+                    'fall' => ['POST'],
+                    'eat' => ['POST'],
                     'delete' => ['POST'],
                 ],
             ],
@@ -41,7 +46,7 @@ class AppleController extends Controller
             $apple = new Apple($this->generateRandomColor());
             $apple->date_born = time() - rand(0, Apple::EXPIRE_HOURS)*3600;
             if (!$apple->save()) {
-                throw new \yii\db\Exception($apple->getFirstError());
+                throw new \yii\db\Exception(Html::errorSummary($apple, ['encode' => false]));
             }
 
             $apples[] = $this->renderPartial('apple', ['apple' => $apple]);
@@ -57,6 +62,54 @@ class AppleController extends Controller
 
 
     /**
+     * @return string
+     * @throws \yii\db\Exception
+     * @throws \yii\web\NotFoundHttpException
+     */
+    public function actionFall()
+    {
+        $appleId = Yii::$app->request->post('id');
+
+        $apple = $this->getApple($appleId);
+
+        $apple->fallToGround();
+        if (!$apple->save()) {
+            throw new \yii\db\Exception(Html::errorSummary($apple, ['encode' => false]));
+        }
+
+        return AppleStatus::getLabel($apple->status);
+    }
+
+    /**
+     * @throws \yii\web\BadRequestHttpException
+     * @throws \yii\web\NotFoundHttpException
+     * @throws \yii\db\Exception
+     */
+    public function actionEat()
+    {
+        $appleId = Yii::$app->request->post('id');
+        $percent = intval(Yii::$app->request->post('percent'));
+
+        if (!$percent || $percent < 0 || $percent > 100) {
+            throw new \yii\web\BadRequestHttpException('Неправильный процент');
+        }
+
+        $apple = $this->getApple($appleId);
+
+        try {
+            $apple->eat($percent);
+        } catch (InvalidArgumentException $e) {
+            throw new \yii\web\BadRequestHttpException($e->getMessage());
+        }
+
+       if (!$apple->save()) {
+            throw new \yii\db\Exception(Html::errorSummary($apple, ['encode' => false]));
+       }
+
+       return $apple->size;
+    }
+
+    /**
      * @return bool
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
@@ -65,17 +118,25 @@ class AppleController extends Controller
     public function actionDelete()
     {
         $appleId = Yii::$app->request->post('id');
-        if (!$appleId) {
-            throw new \yii\web\NotFoundHttpException('Яблоко не найдено: ' . $appleId);
-        }
 
-        $apple = Apple::findOne($appleId);
-        if (!$apple) {
-            throw new \yii\web\NotFoundHttpException('Яблоко не найдено: ' . $appleId);
-        }
+        $apple = $this->getApple($appleId);
 
         $apple->delete();
 
         return true;
+    }
+
+    private function getApple($id)
+    {
+        if (!$id) {
+            throw new \yii\web\NotFoundHttpException('Яблоко не найдено: ' . $id);
+        }
+
+        $apple = Apple::findOne($id);
+        if (!$apple) {
+            throw new \yii\web\NotFoundHttpException('Яблоко не найдено: ' . $id);
+        }
+
+        return $apple;
     }
 }

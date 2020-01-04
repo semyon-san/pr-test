@@ -1,5 +1,5 @@
 jQuery(function() {
-    $('#gen-apples-btn').on('click', function() {
+    $(document).on('click', '#gen-apples-btn', function() {
 
         $.ajax({
             method: "GET",
@@ -17,31 +17,60 @@ jQuery(function() {
         return false;
     });
 
-    $('.apple-drop-btn').on('click', function() {
+    $(document).on('click', '.apple-drop-btn', function() {
+        let appleId = $(this).data('id');
+
+        let btnElement = $(this);
+
+        $.ajax({
+            method: "POST",
+            url: "/apple/fall",
+            data: { id: appleId },
+            beforeSend: function() {
+                btnElement.addClass('disabled');
+            }
+        })
+        .done(function(resp) {
+            $('#apple-'+appleId + ' .apple-status').text(resp);
+        })
+        .fail(function(resp) {
+            alert(resp.responseText);
+        })
+        .always(function() {
+            btnElement.removeClass('disabled');
+        });
+
+        return false;
+    });
+
+    $(document).on('click', '.apple-eat-btn', function() {
         let appleId = $(this).data('id');
 
         return false;
     });
 
-    $('.apple-eat-btn').on('click', function() {
+    $(document).on('click', '.apple-delete-btn', function() {
         let appleId = $(this).data('id');
+        $(this).addClass('disabled');
 
-        return false;
-    });
-
-    $('.apple-delete-btn').on('click', function() {
-        let appleId = $(this).data('id');
+        let btnElement = this;
 
         $.ajax({
             method: "POST",
             url: "/apple/delete",
-            data: { id: appleId }
+            data: { id: appleId },
+            beforeSend: function() {
+                btnElement.addClass('disabled');
+            }
         })
         .done(function(resp) {
             $('#apple-'+appleId).remove();
         })
         .fail(function(resp) {
             alert(resp.responseText);
+        })
+        .always(function() {
+            btnElement.removeClass('disabled');
         });
 
         return false;
