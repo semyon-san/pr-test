@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use backend\models\Apple;
 use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -60,7 +61,9 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $apples = Apple::find()->all();
+
+        return $this->render('index', ['apples' => $apples]);
     }
 
     /**

@@ -8,8 +8,9 @@ use yii\base\InvalidArgumentException;
 class Apple extends \common\models\Apple
 {
     const EXPIRE_HOURS = 5;
+    const DEFAULT_COLOR = 'green';
 
-    public function __construct($color, array $config = [])
+    public function __construct($color=self::DEFAULT_COLOR, array $config = [])
     {
         $this->color = $color;
 
@@ -69,5 +70,18 @@ class Apple extends \common\models\Apple
         }
 
         $this->eaten += $percentage;
+    }
+
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        if ($this->isExpired()) {
+            $this->status = AppleStatus::ROTTEN;
+        }
+
+        return true;
     }
 }
