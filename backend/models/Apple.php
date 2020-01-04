@@ -20,9 +20,10 @@ class Apple extends \common\models\Apple
     public function init()
     {
         parent::init();
-        if ($this->isNewRecord) {
-            $this->status = AppleStatus::ON_TREE;
-            $this->date_born = time();
+        if (!$this->isNewRecord) {
+            if ($this->isExpired()) {
+                $this->status = AppleStatus::ROTTEN;
+            }
         }
     }
 
